@@ -18,7 +18,11 @@
 #include <fwk_mm.h>
 #include <fwk_module.h>
 #include <fwk_module_idx.h>
+#ifdef BUILD_HAS_MULTITHREADING
 #include <fwk_multi_thread.h>
+#else
+#include <fwk_thread.h>
+#endif
 #include <fwk_notification.h>
 #include <internal/mod_scmi.h>
 #include <internal/scmi.h>
@@ -223,6 +227,7 @@ static int write_payload(fwk_id_t service_id, size_t offset,
 {
     int status;
     const struct scmi_service_ctx *ctx;
+
 
     status = fwk_module_check_call(service_id);
     if (status != FWK_SUCCESS)
@@ -621,7 +626,11 @@ static int scmi_service_init(fwk_id_t service_id, unsigned int unused,
     ctx = &scmi_ctx.service_ctx_table[fwk_id_get_element_idx(service_id)];
     ctx->config = config;
 
+#ifdef BUILD_HAS_MULTITHREADING
     return fwk_thread_create(service_id);
+#else
+    return FWK_SUCCESS;
+#endif
 }
 
 static int scmi_bind(fwk_id_t id, unsigned int round)
