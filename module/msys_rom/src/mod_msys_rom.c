@@ -80,11 +80,11 @@ static int msys_deferred_setup(void)
     ctx.ppu_boot_api->power_mode_on(ctx.rom_config->id_primary_cluster);
     ctx.ppu_boot_api->power_mode_on(ctx.rom_config->id_primary_core);
 
-    ctx.log_api->log(MOD_LOG_GROUP_INFO, "[SYSTEM] Primary CPU powered\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_INFO, "[SYSTEM] Primary CPU powered\n");
 
     status = ctx.bootloader_api->load_image();
     if (status != FWK_SUCCESS) {
-        ctx.log_api->log(MOD_LOG_GROUP_ERROR,
+        LOG(ctx.log_api, MOD_LOG_GROUP_ERROR,
                          "[SYSTEM] Failed to load RAM firmware image\n");
         return FWK_E_DATA;
     }

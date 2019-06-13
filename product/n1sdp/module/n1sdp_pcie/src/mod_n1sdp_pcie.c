@@ -115,7 +115,7 @@ static int n1sdp_pcie_ccix_enable_opt_tlp(bool enable)
     else
         value = (CCIX_CTRL_CAW | CCIX_VENDER_ID);
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                           "[PCIE] CCIX_CONTROL: 0x%08x\n", value);
 
     *(uint32_t *)(dev_ctx->lm_apb + PCIE_LM_RC_CCIX_CTRL_REG) = value;
@@ -149,7 +149,7 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                                           pcie_wait_condition,
                                           &wait_data);
         if (status != FWK_SUCCESS) {
-            pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+            LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[PCIe] Controller power-on failed!\n");
             return status;
         }
@@ -164,7 +164,7 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                                           pcie_wait_condition,
                                           &wait_data);
         if (status != FWK_SUCCESS) {
-            pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+            LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[PCIe] Controller power-on failed!\n");
             return status;
         }
@@ -172,7 +172,7 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
     }
 
     /* PHY initialization */
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "[PCIe] Initializing PHY...");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "[PCIe] Initializing PHY...");
 
     pcie_phy_init(dev_ctx->phy_apb, gen_speed);
     status = pcie_init(dev_ctx->ctrl_apb,
@@ -180,58 +180,58 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                        PCIE_INIT_STAGE_PHY,
                        gen_speed);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Timeout!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Timeout!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
     /* Controller initialization */
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                           "[PCIe] Initializing controller...");
     status = pcie_init(dev_ctx->ctrl_apb,
                        pcie_ctx.timer_api,
                        PCIE_INIT_STAGE_CTRL,
                        gen_speed);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Timeout!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Timeout!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
     status = pcie_set_gen_tx_preset(dev_ctx->rp_ep_config_apb,
                                     TX_PRESET_VALUE,
                                     gen_speed);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Equalization failed!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Equalization failed!\n");
         return status;
     }
 
     /* Link training */
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                           "[PCIe] Starting link training...");
     status = pcie_init(dev_ctx->ctrl_apb,
                        pcie_ctx.timer_api,
                        PCIE_INIT_STAGE_LINK_TRNG,
                        gen_speed);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Timeout!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Timeout!\n");
         return dev_ctx->config->ccix_capable ? FWK_SUCCESS : status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
     neg_config = (dev_ctx->ctrl_apb->RP_CONFIG_OUT &
         RP_CONFIG_OUT_NEGOTIATED_SPD_MASK) >> RP_CONFIG_OUT_NEGOTIATED_SPD_POS;
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Negotiated speed: GEN%d\n", neg_config + 1);
 
     neg_config = (dev_ctx->ctrl_apb->RP_CONFIG_OUT &
         RP_CONFIG_OUT_NEGOTIATED_LINK_WIDTH_MASK) >>
         RP_CONFIG_OUT_NEGOTIATED_LINK_WIDTH_POS;
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Negotiated link width: x%d\n", fwk_math_pow2(neg_config));
 
     /* Root Complex setup */
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
                           "[PCIe] Setup Type0 configuration...");
     if (dev_ctx->config->ccix_capable)
         ecam_base_addr = dev_ctx->config->axi_slave_base32 +
@@ -244,12 +244,12 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                  __builtin_ctz(AXI_ECAM_TYPE0_SIZE),
                  TRANS_TYPE_0_CFG);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Setup Type1 configuration...");
     if (dev_ctx->config->ccix_capable)
         ecam_base_addr = dev_ctx->config->axi_slave_base32 +
@@ -262,12 +262,12 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                  __builtin_ctz(AXI_ECAM_TYPE1_SIZE),
                  TRANS_TYPE_1_CFG);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Setup MMIO32 configuration...");
     if (dev_ctx->config->ccix_capable)
         ecam_base_addr = dev_ctx->config->axi_slave_base32 +
@@ -280,12 +280,12 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                  __builtin_ctz(AXI_MMIO32_SIZE),
                  TRANS_TYPE_MEM_IO);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Setup IO configuration...");
     if (dev_ctx->config->ccix_capable)
         ecam_base_addr = dev_ctx->config->axi_slave_base32 +
@@ -298,46 +298,46 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
                  __builtin_ctz(AXI_IO_SIZE),
                  TRANS_TYPE_IO);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Setup MMIO64 configuration...");
     status = axi_outbound_region_setup(dev_ctx->rc_axi_config_apb,
                  dev_ctx->config->axi_slave_base64,
                  __builtin_ctz(AXI_MMIO64_SIZE),
                  TRANS_TYPE_MEM_IO);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Setup RP classcode...");
     status = pcie_rp_ep_config_write_word(dev_ctx->rp_ep_config_apb,
                                           PCIE_CLASS_CODE_OFFSET,
                                           PCIE_CLASS_CODE_PCI_BRIDGE);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Enable inbound region in BAR 2...");
     status = axi_inbound_region_setup(dev_ctx->rc_axi_config_apb,
                  AXI_IB_REGION_BASE,
                  AXI_IB_REGION_SIZE_MSB, 2);
     if (status != FWK_SUCCESS) {
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Error!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Error!\n");
         return status;
     }
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Enable Type 1 I/O configuration\n");
     *(uint32_t *)(dev_ctx->lm_apb + PCIE_LM_RC_BAR_CONFIG_REG) =
         (TYPE1_PREF_MEM_BAR_ENABLE_MASK |
@@ -345,21 +345,21 @@ static int n1sdp_pcie_setup(struct n1sdp_pcie_dev_ctx *dev_ctx)
          TYPE1_PREF_IO_BAR_ENABLE_MASK |
          TYPE1_PREF_IO_BAR_SIZE_32BIT_MASK);
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Skipping ATS capability...");
     status = pcie_skip_ext_cap(dev_ctx->rp_ep_config_apb, EXT_CAP_ID_ATS);
     if (status != FWK_SUCCESS)
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Not found!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Not found!\n");
     else
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
-    pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PCIe] Skipping PRI capability...");
     status = pcie_skip_ext_cap(dev_ctx->rp_ep_config_apb, EXT_CAP_ID_PRI);
     if (status != FWK_SUCCESS)
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Not found!\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Not found!\n");
     else
-        pcie_ctx.log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+        LOG(pcie_ctx.log_api, MOD_LOG_GROUP_INFO, "Done\n");
 
     /*
      * Wait until devices connected in downstream ports

@@ -113,7 +113,7 @@ static int n1sdp_mcp_system_process_event(const struct fwk_event *event,
     if (status != FWK_SUCCESS)
         return status;
 
-    n1sdp_mcp_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(n1sdp_mcp_system_ctx.log_api, MOD_LOG_GROUP_DEBUG,
         "[MCP SYSTEM] SCP clock status: 0x%x\n",
         clock_status);
 
@@ -131,7 +131,7 @@ static int n1sdp_mcp_system_process_event(const struct fwk_event *event,
     if (status != FWK_SUCCESS)
         return FWK_SUCCESS;
 
-    n1sdp_mcp_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(n1sdp_mcp_system_ctx.log_api, MOD_LOG_GROUP_DEBUG,
         "[MCP SYSTEM] MCP PIK clocks configured\n");
 
     status = n1sdp_mcp_system_ctx.scmi_api->get_chipid_info(
@@ -140,7 +140,7 @@ static int n1sdp_mcp_system_process_event(const struct fwk_event *event,
     if (status != FWK_SUCCESS)
         return status;
 
-    n1sdp_mcp_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(n1sdp_mcp_system_ctx.log_api, MOD_LOG_GROUP_DEBUG,
         "[MCP SYSTEM] MC Mode: 0x%x CHIPID: 0x%x\n",
         mc_mode, chipid);
 

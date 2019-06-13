@@ -71,7 +71,7 @@ static int synquacer_memc_config(void)
 {
     fw_ddr_init();
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[SYNQUACER MEMC] DMC init done.\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[SYNQUACER MEMC] DMC init done.\n");
 
     return FWK_SUCCESS;
 }

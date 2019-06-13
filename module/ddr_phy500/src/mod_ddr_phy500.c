@@ -46,7 +46,7 @@ static int ddr_phy500_config(fwk_id_t element_id)
 
     ddr = (struct mod_ddr_phy500_reg *)element_config->ddr;
 
-    status = log_api->log(MOD_LOG_GROUP_INFO,
+    status = LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Initializing PHY at 0x%x\n", (uintptr_t) ddr);
     if (status != FWK_SUCCESS)
         return status;

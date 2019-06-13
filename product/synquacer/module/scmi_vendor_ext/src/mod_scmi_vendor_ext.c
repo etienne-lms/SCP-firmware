@@ -194,8 +194,8 @@ static int scmi_vendor_ext_protocol_memory_info_get_handler(
 {
     memset(&resp, 0, sizeof(struct scmi_vendor_ext_memory_info_get_resp));
 
-    scmi_vendor_ext_ctx.log_api->log(
-        MOD_LOG_GROUP_DEBUG, "[scmi_vendor_ext] memory info get handler.\n");
+    LOG(scmi_vendor_ext_ctx.log_api, MOD_LOG_GROUP_DEBUG,
+	"[scmi_vendor_ext] memory info get handler.\n");
 
     get_memory_info(&resp.meminfo);
 
@@ -232,8 +232,8 @@ static int scmi_vendor_ext_message_handler(
     int status;
     int32_t return_value;
 
-    scmi_vendor_ext_ctx.log_api->log(
-        MOD_LOG_GROUP_DEBUG, "[scmi_vendor_ext] message handler.\n");
+    LOG(scmi_vendor_ext_ctx.log_api, MOD_LOG_GROUP_DEBUG,
+	"[scmi_vendor_ext] message handler.\n");
 
     status = fwk_module_check_call(protocol_id);
     if (status != FWK_SUCCESS)
@@ -321,8 +321,8 @@ static int scmi_vendor_ext_process_bind_request(
     if (!fwk_id_is_equal(source_id, FWK_ID_MODULE(FWK_MODULE_IDX_SCMI)))
         return FWK_E_ACCESS;
 
-    scmi_vendor_ext_ctx.log_api->log(
-        MOD_LOG_GROUP_DEBUG, "[scmi_vendor_ext] process bind request.\n");
+    LOG(scmi_vendor_ext_ctx.log_api, MOD_LOG_GROUP_DEBUG,
+	"[scmi_vendor_ext] process bind request.\n");
 
     *api = &scmi_vendor_ext_mod_scmi_to_protocol_api;
 

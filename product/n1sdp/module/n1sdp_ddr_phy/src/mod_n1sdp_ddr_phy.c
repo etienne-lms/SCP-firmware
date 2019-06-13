@@ -97,7 +97,7 @@ static int n1sdp_ddr_phy_config(fwk_id_t element_id, struct dimm_info *info)
 
     ddr_phy = (struct mod_n1sdp_ddr_phy_reg *)element_config->ddr;
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR-PHY] Initializing PHY at 0x%x for %d MHz speed\n",
         (uintptr_t)ddr_phy, info->speed);
 
@@ -112,7 +112,7 @@ static int n1sdp_ddr_phy_config(fwk_id_t element_id, struct dimm_info *info)
         ddr_phy_config_800(ddr_phy, info);
         break;
     default:
-        log_api->log(MOD_LOG_GROUP_INFO, "[DDR-PHY] Unsupported frequency!\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR-PHY] Unsupported frequency!\n");
         break;
     }
 
@@ -225,7 +225,7 @@ uint32_t dci_write_dram(struct mod_dmc620_reg *dmc, uint32_t *scp_address,
 
     // Confirm that DMC is in config state
     if ((dmc->MEMC_STATUS & 0x7) != 0x0) {
-        log_api->log(MOD_LOG_GROUP_INFO, "DMC needs to be in config state\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "DMC needs to be in config state\n");
         return FWK_E_STATE;
     }
 
@@ -279,7 +279,7 @@ uint32_t dci_read_dram(struct mod_dmc620_reg *dmc, uint32_t *scp_address,
 
     // Confirm that DMC is in config state
     if ((dmc->MEMC_STATUS & 0x7) != 0x0) {
-        log_api->log(MOD_LOG_GROUP_INFO, "DMC needs to be in config state\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "DMC needs to be in config state\n");
         return FWK_E_PARAM;
     }
 
@@ -709,7 +709,7 @@ static int write_eye_detect(fwk_id_t element_id, struct dimm_info *info,
     int status = FWK_SUCCESS;
 
     if (((int)rank_sel > (info->number_of_ranks - 1)) && (rank_sel != 0xF)) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR-PHY] Invalid rank parameter %d\n", rank_sel);
         return FWK_E_PARAM;
     }
@@ -726,7 +726,7 @@ static int write_eye_detect(fwk_id_t element_id, struct dimm_info *info,
         status = write_eye_detect_single_rank(element_id, info, rank,
             delay_increment, vrefdq_increment, dbg_level);
         if (status != FWK_SUCCESS) {
-            log_api->log(MOD_LOG_GROUP_INFO,
+            LOG(log_api, MOD_LOG_GROUP_INFO,
                 "[DDR-PHY] WET single rank failed with error %d\n", status);
             break;
         }
@@ -762,7 +762,7 @@ static int n1sdp_ddr_phy_post_training_configure(fwk_id_t element_id,
     phy_addr = (uint32_t)element_config->ddr;
     rddata_valid_value = 0;
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR-PHY] Post training PHY setting at 0x%x\n", phy_addr);
 
     for (i = 0; i < 9; i++)  {
@@ -827,14 +827,14 @@ static int n1sdp_ddr_phy_post_training_configure(fwk_id_t element_id,
         adjust_per_rank_rptr_update_value(phy_addr, info);
 
     if (info->speed >= 1333) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR-PHY] Performing write eye training...");
         status = write_eye_detect(element_id, info, 0xF, 0x4, 0x2, 0);
         if (status != FWK_SUCCESS) {
-            log_api->log(MOD_LOG_GROUP_INFO, "FAIL!\n");
+            LOG(log_api, MOD_LOG_GROUP_INFO, "FAIL!\n");
             return status;
         }
-        log_api->log(MOD_LOG_GROUP_INFO, "PASS!\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "PASS!\n");
     }
 
     for (h = 0; h < info->number_of_ranks; h++) {
@@ -890,7 +890,7 @@ static int n1sdp_verify_phy_status(fwk_id_t element_id,
                 value2 = *(uint32_t *)(phy_base + (4 * (42 + (i * 256))));
                 if (((value1 >> 16) >= 0x0200) ||
                     ((value2 & 0x0000FFFF) >= 0x200)) {
-                log_api->log(MOD_LOG_GROUP_INFO,
+                LOG(log_api, MOD_LOG_GROUP_INFO,
                     "[DDR-PHY] PHY 0x%08x : Invalid Hard0/Hard 1 value found "
                     "for slice %d\n", phy_base, i);
                 }
@@ -907,7 +907,7 @@ static int n1sdp_verify_phy_status(fwk_id_t element_id,
                 value1 = *(uint32_t *)(phy_base + (4 * (46 + (i * 256))));
                 if ((value1 != 0x003C) &&
                     ((info->dimm_mem_width == 4) && (value1 != 0x13C))) {
-                    log_api->log(MOD_LOG_GROUP_INFO,
+                    LOG(log_api, MOD_LOG_GROUP_INFO,
                         "[DDR-PHY] PHY 0x%08x : Final read gate training "
                         "status != 0x003C for slice %d\n", phy_base, i);
                 }
@@ -931,20 +931,20 @@ static int n1sdp_verify_phy_status(fwk_id_t element_id,
                     *(uint32_t *)(phy_base + (4 * (34 + (i * 256)))) = value1;
                     value1 = *(uint32_t *)(phy_base + (4 * (47 + (i * 256))));
                     if ((value1 & 0x0000FFFF) > 0x0180) {
-                        log_api->log(MOD_LOG_GROUP_INFO,
+                        LOG(log_api, MOD_LOG_GROUP_INFO,
                             "[DDR-PHY] PHY 0x%08x : slice %d "
                             " phy_rdlvl_rddqs_dq_le_dly_obs_%d is > 0x180\n",
                             phy_base, j, i);
                     }
                     if ((value1 >> 16) > 0x0180) {
-                        log_api->log(MOD_LOG_GROUP_INFO,
+                        LOG(log_api, MOD_LOG_GROUP_INFO,
                         "[DDR-PHY] PHY 0x%08x : slice %d "
                         "phy_rdlvl_rddqs_dq_te_dly_obs_%d is > 0x180\n",
                         phy_base, j, i);
                     }
                     value1 = *(uint32_t *)(phy_base + (4 * (49 + (i * 256))));
                     if ((value1 >> 16) != 0x0C00) {
-                        log_api->log(MOD_LOG_GROUP_INFO,
+                        LOG(log_api, MOD_LOG_GROUP_INFO,
                             "[DDR-PHY] PHY 0x%08x : Final read data eye training "
                             "status != 0x0C00 for slice %d\n", phy_base, i);
                     }

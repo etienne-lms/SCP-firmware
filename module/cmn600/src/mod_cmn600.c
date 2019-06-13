@@ -94,7 +94,7 @@ static int cmn600_discovery(void)
     struct node_header *node;
     const struct mod_cmn600_config *config = ctx->config;
 
-    ctx->log_api->log(MOD_LOG_GROUP_DEBUG, MOD_NAME "Starting discovery...\n");
+    LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG, MOD_NAME "Starting discovery...\n");
 
     assert(get_node_type(ctx->root) == NODE_TYPE_CFG);
 
@@ -105,8 +105,8 @@ static int cmn600_discovery(void)
         xp = get_child_node(config->base, ctx->root, xp_idx);
         assert(get_node_type(xp) == NODE_TYPE_XP);
 
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG, MOD_NAME "\n");
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG, MOD_NAME "\n");
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
             MOD_NAME "XP (%d, %d) ID:%d, LID:%d\n",
             get_node_pos_x(xp),
             get_node_pos_y(xp),
@@ -126,7 +126,7 @@ static int cmn600_discovery(void)
             if (get_child_node_id(xp, node_idx) == config->cxgla_node_id)
                 ctx->cxla_reg = (void *)node;
 
-            ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+            LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
                     MOD_NAME "  Found external node ID:%d\n",
                     get_child_node_id(xp, node_idx));
 
@@ -135,7 +135,7 @@ static int cmn600_discovery(void)
                 switch (get_node_type(node)) {
                 case NODE_TYPE_HN_F:
                     if ((ctx->hnf_count++) >= MAX_HNF_COUNT) {
-                        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+                        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
                                 MOD_NAME "  hnf count %d >= max limit (%d)\n",
                                 ctx->hnf_count, MAX_HNF_COUNT);
                         return FWK_E_DATA;
@@ -149,7 +149,7 @@ static int cmn600_discovery(void)
 
                 case NODE_TYPE_RN_D:
                     if ((ctx->rnd_count++) >= MAX_RND_COUNT) {
-                        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+                        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
                                 MOD_NAME "  rnd count %d >= max limit (%d)\n",
                                 ctx->rnd_count, MAX_RND_COUNT);
                         return FWK_E_DATA;
@@ -159,7 +159,7 @@ static int cmn600_discovery(void)
 
                 case NODE_TYPE_RN_I:
                     if ((ctx->rni_count++) >= MAX_RNI_COUNT) {
-                        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+                        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
                                 MOD_NAME "  rni count %d >= max limit (%d)\n",
                                 ctx->rni_count, MAX_RNI_COUNT);
                         return FWK_E_DATA;
@@ -181,7 +181,7 @@ static int cmn600_discovery(void)
                     break;
                 }
 
-                ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+                LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
                     MOD_NAME "  %s ID:%d, LID:%d\n",
                     get_node_type_name(get_node_type(node)),
                     get_node_id(node),
@@ -190,7 +190,7 @@ static int cmn600_discovery(void)
         }
     }
 
-    ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
         MOD_NAME "Total internal RN-SAM nodes: %d\n"
         MOD_NAME "Total external RN-SAM nodes: %d\n"
         MOD_NAME "Total HN-F nodes: %d\n"
@@ -203,17 +203,17 @@ static int cmn600_discovery(void)
         ctx->rni_count);
 
     if (ctx->cxla_reg) {
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
             MOD_NAME "CCIX CXLA node at: 0x%08x\n",
             (uint32_t)ctx->cxla_reg);
     }
     if (ctx->cxg_ra_reg) {
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
             MOD_NAME "CCIX CXRA node at: 0x%08x\n",
             (uint32_t)ctx->cxg_ra_reg);
     }
     if (ctx->cxg_ha_reg) {
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
             MOD_NAME "CCIX CXHA node at: 0x%08x\n",
             (uint32_t)ctx->cxg_ha_reg);
     }
@@ -291,13 +291,13 @@ int cmn600_setup_sam(struct cmn600_rnsam_reg *rnsam)
     unsigned int group_count;
     enum sam_node_type sam_node_type;
 
-    ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
         MOD_NAME "Configuring SAM for node %d\n",
         get_node_id(rnsam));
 
     for (region_idx = 0; region_idx < config->mmap_count; region_idx++) {
         region = &config->mmap_table[region_idx];
-        ctx->log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG,
             MOD_NAME "  [0x%lx - 0x%lx] %s\n",
             region->base,
             region->base + region->size - 1,
@@ -437,7 +437,7 @@ static int cmn600_setup(void)
         }
     }
 
-    ctx->log_api->log(MOD_LOG_GROUP_DEBUG, MOD_NAME "Done\n");
+    LOG(ctx->log_api, MOD_LOG_GROUP_DEBUG, MOD_NAME "Done\n");
 
     ctx->initialized = true;
 

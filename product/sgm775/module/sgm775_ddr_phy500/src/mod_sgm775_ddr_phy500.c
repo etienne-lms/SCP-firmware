@@ -36,7 +36,7 @@ static int sgm775_ddr_phy500_config(fwk_id_t element_id)
 
     ddr = (struct mod_sgm775_ddr_phy500_reg *)element_config->ddr;
 
-    log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(log_api, MOD_LOG_GROUP_DEBUG,
         "[DDR] Initializing PHY at 0x%x\n", (uintptr_t) ddr);
 
     ddr->T_CTRL_DELAY   = 0x00000000;

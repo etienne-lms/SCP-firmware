@@ -489,7 +489,7 @@ static bool is_valid_composite_state(struct pd_ctx *target_pd,
     return true;
 
 error:
-    mod_pd_ctx.log_api->log(MOD_LOG_GROUP_ERROR,
+    LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_ERROR,
         "[PD] Invalid composite state for %s: 0x%08x\n",
         fwk_module_get_name(target_pd->id), composite_state);
     return false;
@@ -697,17 +697,17 @@ static int initiate_power_state_transition(struct pd_ctx *pd)
 
     if ((pd->driver_api->deny != NULL) &&
         pd->driver_api->deny(pd->driver_id, state)) {
-        mod_pd_ctx.log_api->log(MOD_LOG_GROUP_WARNING,
+        LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_WARNING,
             "[PD] Transition of %s to state <%s>,\n",
             fwk_module_get_name(pd->id), get_state_name(pd, state));
-        mod_pd_ctx.log_api->log(MOD_LOG_GROUP_WARNING,
+        LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_WARNING,
             "\tdenied by driver.\n");
         return FWK_E_DEVICE;
     }
 
     status = pd->driver_api->set_state(pd->driver_id, state);
 
-    mod_pd_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_DEBUG,
         "[PD] %s: %s->%s, %e\n", fwk_module_get_name(pd->id),
         get_state_name(pd, pd->state_requested_to_driver),
         get_state_name(pd, state), status);
@@ -1178,7 +1178,7 @@ static void process_system_shutdown_request(
         pd = &mod_pd_ctx.pd_ctx_table[pd_idx];
         pd_id = FWK_ID_ELEMENT(FWK_MODULE_IDX_POWER_DOMAIN, pd_idx);
 
-        mod_pd_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_DEBUG,
             "[PD] Shutting down %s\n", fwk_module_get_name(pd_id));
 
         if (pd->driver_api->shutdown != NULL) {
@@ -1188,11 +1188,11 @@ static void process_system_shutdown_request(
             status = pd->driver_api->set_state(pd->driver_id, MOD_PD_STATE_OFF);
 
         if (status != FWK_SUCCESS)
-            mod_pd_ctx.log_api->log(MOD_LOG_GROUP_ERROR,
+            LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_ERROR,
                 "[PD] Shutdown of %s returned %e\n",
                 fwk_module_get_name(pd_id), status);
         else
-            mod_pd_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+            LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_DEBUG,
                 "[PD] %s shutdown\n", fwk_module_get_name(pd_id));
 
         pd->requested_state =
@@ -1775,7 +1775,7 @@ static int pd_start(fwk_id_t id)
         /* Get the current power state of the power domain from its driver. */
         status = pd->driver_api->get_state(pd->driver_id, &state);
         if (status != FWK_SUCCESS) {
-            mod_pd_ctx.log_api->log(MOD_LOG_GROUP_ERROR, driver_error_msg,
+            LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_ERROR, driver_error_msg,
                 status, __func__, __LINE__);
         } else {
             pd->requested_state = pd->state_requested_to_driver = state;
@@ -1894,8 +1894,7 @@ static int pd_process_event(const struct fwk_event *event,
         return FWK_SUCCESS;
 
     default:
-        mod_pd_ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(mod_pd_ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[PD] Invalid power state request: <%d>.\n",
             event->id);
 

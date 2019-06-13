@@ -94,7 +94,7 @@ static int sgi575_rom_start(fwk_id_t id)
 static int sgi575_rom_process_event(const struct fwk_event *event,
     struct fwk_event *resp)
 {
-    log_api->log(MOD_LOG_GROUP_INFO, "[ROM] Launch RAM\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[ROM] Launch RAM\n");
 
     if (rom_config->load_ram_size != 0) {
         memcpy((void *)rom_config->ramfw_base,

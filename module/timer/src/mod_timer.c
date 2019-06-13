@@ -510,7 +510,7 @@ static void timer_isr(uintptr_t ctx_ptr)
             alarm->timestamp += timestamp;
             _insert_alarm_ctx_into_active_queue(ctx, alarm);
         } else
-            log_api->log(MOD_LOG_GROUP_ERROR,
+            LOG(log_api, MOD_LOG_GROUP_ERROR,
                          "[Timer] Error: Periodic alarm could not be added "
                          "back into queue.\n");
     }

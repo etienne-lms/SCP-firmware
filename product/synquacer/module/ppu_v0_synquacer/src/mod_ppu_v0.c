@@ -84,15 +84,14 @@ static int get_state(struct ppu_v0_reg *ppu, unsigned int *state)
 
     *state = ppu_mode_to_power_state[ppu_mode];
     if (*state == MODE_UNSUPPORTED) {
-        ppu_v0_ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[PPUV0] Unexpected PPU mode (%i).\n",
             ppu_mode);
         return FWK_E_DEVICE;
     }
 
-    ppu_v0_ctx.log_api->log(
-        MOD_LOG_GROUP_INFO, "[PPUV0] get state reg=0x%x (0x%x)\n", ppu, *state);
+    LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_INFO,
+	"[PPUV0] get state reg=0x%x (0x%x)\n", ppu, *state);
 
     return FWK_SUCCESS;
 }
@@ -115,8 +114,7 @@ static int pd_set_state(fwk_id_t pd_id, unsigned int state)
 
     pd_ctx = ppu_v0_ctx.pd_ctx_table + fwk_id_get_element_idx(pd_id);
 
-    ppu_v0_ctx.log_api->log(
-        MOD_LOG_GROUP_INFO,
+    LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[PPUV0] set_state start. reg=(0x%x) state=(0x%x)\n",
         pd_ctx->ppu,
         state);
@@ -127,8 +125,7 @@ static int pd_set_state(fwk_id_t pd_id, unsigned int state)
         status = pd_ctx->pd_driver_input_api->report_power_state_transition(
             pd_ctx->bound_id, MOD_PD_STATE_ON);
 
-        ppu_v0_ctx.log_api->log(
-            MOD_LOG_GROUP_INFO,
+        LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_INFO,
             "[PPUV0] set_state end. reg=(0x%x) state=(0x%x)\n",
             pd_ctx->ppu,
             state);
@@ -138,8 +135,7 @@ static int pd_set_state(fwk_id_t pd_id, unsigned int state)
 
     case MOD_PD_STATE_OFF:
         if (pd_ctx->config->pd_type == MOD_PD_TYPE_SYSTEM) {
-            ppu_v0_ctx.log_api->log(
-                MOD_LOG_GROUP_INFO,
+            LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[PPUV0] SYNQUACER SYSTEM module will shutdown the system\n");
             break;
         }
@@ -157,8 +153,7 @@ static int pd_set_state(fwk_id_t pd_id, unsigned int state)
         status = pd_ctx->pd_driver_input_api->report_power_state_transition(
             pd_ctx->bound_id, MOD_PD_STATE_OFF);
 
-        ppu_v0_ctx.log_api->log(
-            MOD_LOG_GROUP_INFO,
+        LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_INFO,
             "[PPUV0] set_state end. reg=(0x%x) state=(0x%x)\n",
             pd_ctx->ppu,
             state);
@@ -167,8 +162,7 @@ static int pd_set_state(fwk_id_t pd_id, unsigned int state)
         break;
 
     default:
-        ppu_v0_ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(ppu_v0_ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[PPUV0] Requested power state (%i) is not supported.\n",
             state);
         return FWK_E_PARAM;

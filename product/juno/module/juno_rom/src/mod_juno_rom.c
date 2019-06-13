@@ -197,8 +197,7 @@ static int deferred_setup(void)
         FWK_ARRAY_SIZE(core_ppu_table_little));
 
     if (status != FWK_SUCCESS) {
-        ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[ROM] ERROR: Failed to turn on LITTLE cluster.\n");
         return FWK_E_DEVICE;
     }
@@ -210,8 +209,7 @@ static int deferred_setup(void)
         FWK_ARRAY_SIZE(core_ppu_table_big));
 
     if (status != FWK_SUCCESS) {
-        ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[ROM] ERROR: Failed to turn on big cluster.\n");
         return FWK_E_DEVICE;
     }
@@ -236,7 +234,7 @@ static int deferred_setup(void)
 
     status = ctx.bootloader_api->load_image();
     if (status != FWK_SUCCESS) {
-        ctx.log_api->log(MOD_LOG_GROUP_ERROR,
+        LOG(ctx.log_api, MOD_LOG_GROUP_ERROR,
                          "[ROM] ERROR: Failed to load RAM firmware image\n");
         return FWK_E_DATA;
     }
@@ -370,8 +368,7 @@ static int juno_rom_process_event(
     /* Set alternative AP ROM address (if applicable) */
     if (SCC->APP_ALT_BOOT != 0) {
         if ((SCC->APP_ALT_BOOT & 0x3) != 0) {
-            ctx.log_api->log(
-                MOD_LOG_GROUP_ERROR,
+            LOG(ctx.log_api, MOD_LOG_GROUP_ERROR,
                 "[ROM] ERROR: Alternative AP ROM address does not have 4 byte "
                 "alignment\n");
             return FWK_E_ALIGN;

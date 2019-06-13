@@ -51,7 +51,7 @@ static int juno_ddr_phy400_config_ddr(fwk_id_t element_id)
     if ((phy_ptm == NULL) || (phy_c3a == NULL) || (phy_bl0 == NULL))
         return FWK_E_DATA;
 
-    log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(log_api, MOD_LOG_GROUP_DEBUG,
         "[DDR] Initializing PHY at 0x%x\n", (uintptr_t)phy_ptm);
 
     /* All writes to BL0 are copied to BL1-3 */
@@ -152,7 +152,7 @@ static int juno_ddr_phy400_config_clk(fwk_id_t module_id)
     if (status != FWK_SUCCESS)
         return status;
 
-    log_api->log(MOD_LOG_GROUP_DEBUG, "[DDR] Initializing PHY-PLL\n");
+    LOG(log_api, MOD_LOG_GROUP_DEBUG, "[DDR] Initializing PHY-PLL\n");
 
     /* Complete clock settings */
     SCC->DDR_PHY0_PLL = SCC_DDR_PHY_PLL_BYPASS_EN;

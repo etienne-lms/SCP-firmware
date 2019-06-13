@@ -176,7 +176,7 @@ static int scmi_ccix_config_protocol_get_handler(fwk_id_t service_id,
     if (sizeof(return_values) > max_payload_size) {
         return_values.status = SCMI_OUT_OF_RANGE;
         status = FWK_E_RANGE;
-        scmi_ccix_config_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(scmi_ccix_config_ctx.log_api, MOD_LOG_GROUP_DEBUG,
             "[SCMI CCIX CONFIG] max payload size is  %d\n",
              max_payload_size);
         goto exit;
@@ -256,7 +256,7 @@ static int scmi_ccix_config_protocol_set_handler(fwk_id_t service_id,
     if (sizeof(*params) > max_payload_size) {
         return_values.status = SCMI_OUT_OF_RANGE;
         status = FWK_E_RANGE;
-        scmi_ccix_config_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(scmi_ccix_config_ctx.log_api, MOD_LOG_GROUP_DEBUG,
             "[SCMI CCIX CONFIG] max payload size is  %d\n",
              max_payload_size);
         goto exit;

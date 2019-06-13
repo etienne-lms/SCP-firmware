@@ -137,22 +137,22 @@ static int n1sdp_rom_process_event(const struct fwk_event *event,
             return FWK_E_DATA;
 
         if (fip_desc->type == MOD_N1SDP_FIP_TYPE_MCP_BL2) {
-            n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+            LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[ROM] Found MCP RAM Firmware at address: 0x%x,"
                 " size: %d bytes, flags: 0x%x\n",
                 fip_desc->address,
                 fip_desc->size,
                 fip_desc->flags);
-                n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+                LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[ROM] Copying MCP RAM Firmware to ITCRAM...!\n");
         } else {
-            n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+            LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[ROM] Found SCP BL2 RAM Firmware at address: 0x%x,"
                 " size: %d bytes, flags: 0x%x\n",
                 fip_desc->address,
                 fip_desc->size,
                 fip_desc->flags);
-                n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+                LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO,
                 "[ROM] Copying SCP RAM Firmware to ITCRAM...!\n");
         }
         break;
@@ -163,9 +163,9 @@ static int n1sdp_rom_process_event(const struct fwk_event *event,
 
     memcpy((void *)n1sdp_rom_ctx.rom_config->ramfw_base,
         (uint8_t *)fip_desc->address, fip_desc->size);
-    n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO, "[ROM] Done!\n");
+    LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO, "[ROM] Done!\n");
 
-    n1sdp_rom_ctx.log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(n1sdp_rom_ctx.log_api, MOD_LOG_GROUP_INFO,
         "[ROM] Jumping to RAM Firmware\n");
 
     jump_to_ramfw();

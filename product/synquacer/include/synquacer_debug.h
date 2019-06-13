@@ -16,7 +16,7 @@
 
 #ifdef SYNQUACER_LOG_GROUP_ERROR
 #define SYNQUACER_DEV_LOG_ERROR(...) \
-    synquacer_system_ctx.log_api->log(MOD_LOG_GROUP_ERROR, __VA_ARGS__)
+    LOG(synquacer_system_ctx.log_api, MOD_LOG_GROUP_ERROR, __VA_ARGS__)
 #else
 #define SYNQUACER_DEV_LOG_ERROR(...) \
     do {                             \
@@ -25,7 +25,7 @@
 
 #ifdef SYNQUACER_LOG_GROUP_WARNING
 #define SYNQUACER_DEV_LOG_WARNING(...) \
-    synquacer_system_ctx.log_api->log(MOD_LOG_GROUP_WARNING, __VA_ARGS__)
+    LOG(synquacer_system_ctx.log_api, MOD_LOG_GROUP_WARNING, __VA_ARGS__)
 #else
 #define SYNQUACER_DEV_LOG_WARNING(...) \
     do {                               \
@@ -34,7 +34,7 @@
 
 #ifdef SYNQUACER_LOG_GROUP_INFO
 #define SYNQUACER_DEV_LOG_INFO(...) \
-    synquacer_system_ctx.log_api->log(MOD_LOG_GROUP_INFO, __VA_ARGS__)
+    LOG(synquacer_system_ctx.log_api, MOD_LOG_GROUP_INFO, __VA_ARGS__)
 #else
 #define SYNQUACER_DEV_LOG_INFO(...) \
     do {                            \
@@ -43,7 +43,7 @@
 
 #ifdef SYNQUACER_LOG_GROUP_DEBUG
 #define SYNQUACER_DEV_LOG_DEBUG(...) \
-    synquacer_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG, __VA_ARGS__)
+    LOG(synquacer_system_ctx.log_api, MOD_LOG_GROUP_DEBUG, __VA_ARGS__)
 #else
 #define SYNQUACER_DEV_LOG_DEBUG(...) \
     do {                             \

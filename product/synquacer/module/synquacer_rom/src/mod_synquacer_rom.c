@@ -99,7 +99,8 @@ static int synquacer_rom_process_event(
     const struct fwk_event *event,
     struct fwk_event *resp)
 {
-    log_api->log(MOD_LOG_GROUP_INFO, "[scp_romfw] Launch scp_ramfw\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[scp_romfw] Launch scp_ramfw\n");
+
 
     if (rom_config->load_ram_size != 0) {
         memcpy(

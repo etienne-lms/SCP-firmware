@@ -47,7 +47,7 @@ void dmc620_abort_recover(struct mod_dmc620_reg *dmc)
     current_state = dmc->MEMC_STATUS & 0x00000007;
     /* Make sure we don't run this from ABORT or RECOVERY states */
     if (current_state > 3) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] DMC generated abortable error from abort/recovery state\n");
         return;
     }
@@ -56,48 +56,48 @@ void dmc620_abort_recover(struct mod_dmc620_reg *dmc)
     dmc_abort = (uint32_t *)((uint32_t)dmc + 0x10000);
 
     /* Assert abort request */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Asserting abort request\n");
     *dmc_abort = 0x1;
 
     /* Wait for DMC to enter aborted state */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Waiting for DMC to enter abort state...");
     while ((dmc->MEMC_STATUS & 0x00000007) != 0x4)
         continue;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "DONE\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "DONE\n");
 
     /* Deassert abort request */
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Deasserting abort request\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Deasserting abort request\n");
     *dmc_abort = 0x0;
 
     /* Send ABORT_CLR command to change to recovery mode. */
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Sending abort clear\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Sending abort clear\n");
     dmc->MEMC_CMD = 0x00000006;
 
     /* Wait for state transition to complete */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Waiting for DMC state transition...");
     while ((dmc->MEMC_STATUS & 0x00000007) != 0x5)
         continue;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "DONE\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "DONE\n");
 
     /* Go back to pre-error state */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Initiating state transition back to normal world\n");
     dmc->MEMC_CMD = current_state;
 
     /* Wait for state transition to complete */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Waiting for DMC state transition...");
     while ((dmc->MEMC_STATUS & 0x00000007) != current_state)
         continue;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "DONE\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "DONE\n");
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Resuming operation in state %d\n", current_state);
 }
 
@@ -116,7 +116,7 @@ void dmc620_handle_interrupt(int dmc_num)
 
 void dmc0_misc_oflow_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 MISC overflow interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_MISC_OFLOW_IRQ);
@@ -124,7 +124,7 @@ void dmc0_misc_oflow_handler(void)
 
 void dmc0_err_oflow_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 error overflow interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_ERR_OFLOW_IRQ);
@@ -132,7 +132,7 @@ void dmc0_err_oflow_handler(void)
 
 void dmc0_ecc_err_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 ECC error interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_ECC_ERR_INT_IRQ);
@@ -140,7 +140,7 @@ void dmc0_ecc_err_handler(void)
 
 void dmc0_misc_access_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 misc access interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_MISC_ACCESS_INT_IRQ);
@@ -148,7 +148,7 @@ void dmc0_misc_access_handler(void)
 
 void dmc0_temp_event_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 temperature event interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_TEMPERATURE_EVENT_INT_IRQ);
@@ -156,7 +156,7 @@ void dmc0_temp_event_handler(void)
 
 void dmc0_failed_access_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 failed access interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_FAILED_ACCESS_INT_IRQ);
@@ -164,7 +164,7 @@ void dmc0_failed_access_handler(void)
 
 void dmc0_mgr_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC0 mgr interrupt!\n");
     dmc620_handle_interrupt(0);
     fwk_interrupt_clear_pending(DMCS0_MGR_INT_IRQ);
@@ -172,7 +172,7 @@ void dmc0_mgr_handler(void)
 
 void dmc1_misc_oflow_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 MISC overflow interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_MISC_OFLOW_IRQ);
@@ -180,7 +180,7 @@ void dmc1_misc_oflow_handler(void)
 
 void dmc1_err_oflow_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 error overflow interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_ERR_OFLOW_IRQ);
@@ -188,7 +188,7 @@ void dmc1_err_oflow_handler(void)
 
 void dmc1_ecc_err_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 ECC error interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_ECC_ERR_INT_IRQ);
@@ -196,7 +196,7 @@ void dmc1_ecc_err_handler(void)
 
 void dmc1_misc_access_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 misc access interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_MISC_ACCESS_INT_IRQ);
@@ -204,7 +204,7 @@ void dmc1_misc_access_handler(void)
 
 void dmc1_temp_event_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 temperature event interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_TEMPERATURE_EVENT_INT_IRQ);
@@ -212,7 +212,7 @@ void dmc1_temp_event_handler(void)
 
 void dmc1_failed_access_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 failed access interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_FAILED_ACCESS_INT_IRQ);
@@ -220,7 +220,7 @@ void dmc1_failed_access_handler(void)
 
 void dmc1_mgr_handler(void)
 {
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] DMC1 mgr interrupt!\n");
     dmc620_handle_interrupt(1);
     fwk_interrupt_clear_pending(DMCS1_MGR_INT_IRQ);
@@ -231,7 +231,7 @@ static int dmc620_config_interrupt(fwk_id_t ddr_id)
     int id;
 
     id = fwk_id_get_element_idx(ddr_id);
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Configuring interrupts for DMC%d\n", id);
 
     if (id == 0) {
@@ -327,7 +327,7 @@ static int ddr_poll_training_status(struct mod_dmc620_reg *dmc)
                              dmc620_wait_condition,
                              &wait_data);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO, "FAIL\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "FAIL\n");
         return status;
     }
 
@@ -337,11 +337,11 @@ static int ddr_poll_training_status(struct mod_dmc620_reg *dmc)
                              dmc620_wait_condition,
                              &wait_data);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO, "FAIL\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "FAIL\n");
         return status;
     }
 
-    log_api->log(MOD_LOG_GROUP_INFO, "PASS\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "PASS\n");
 
     return FWK_SUCCESS;
 }
@@ -366,10 +366,10 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
     int j;
     int status;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Training DDR memories...\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Training DDR memories...\n");
 
     for (i = 1; i <= ddr_info.number_of_ranks; i++) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Write leveling rank %d... ", i);
 
         /* Clear interrupt status if any */
@@ -395,12 +395,12 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
     ddr_phy_api->verify_phy_status(ddr_id, DDR_ADDR_TRAIN_TYPE_WR_LVL, info);
 
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Read gate training\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Read gate training\n");
     /* Clear interrupt status if any */
     if (dmc->INTERRUPT_STATUS != 0)
         dmc->INTERRUPT_CLR = 0xFFFFFFFF;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] A side...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] A side...");
 
     /* Set read level control parameter */
     value = dmc->RDLVL_CONTROL_NEXT;
@@ -428,7 +428,7 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
         dmc->INTERRUPT_CLR = 0xFFFFFFFF;
 
 #if DDR_TRAIN_TWO_RANKS
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] B side...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] B side...");
 
     /* Set write leveling parameters */
     value = dmc->RDLVL_CONTROL_NEXT;
@@ -451,13 +451,13 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
     for (j = 1; j <= ddr_info.number_of_ranks; j++)
         ddr_phy_api->read_gate_phy_obs_regs(ddr_id, j, info);
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Read eye training\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Read eye training\n");
 
     /* Clear interrupt status if any */
     if (dmc->INTERRUPT_STATUS != 0)
         dmc->INTERRUPT_CLR = 0xFFFFFFFF;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] A side...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] A side...");
 
     /* Set write leveling parameters */
     value = dmc->RDLVL_CONTROL_NEXT;
@@ -484,7 +484,7 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
     if (dmc->INTERRUPT_STATUS != 0)
         dmc->INTERRUPT_CLR = 0xFFFFFFFF;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] B side...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] B side...");
 
     /* Set write leveling parameters */
     value = dmc->RDLVL_CONTROL_NEXT;
@@ -510,7 +510,7 @@ static int ddr_training(struct mod_dmc620_reg *dmc,
     if (dmc->INTERRUPT_STATUS != 0)
         dmc->INTERRUPT_CLR = 0xFFFFFFFF;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] MC initiated update...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] MC initiated update...");
 
     dmc->DIRECT_ADDR = 0;
     dmc->DIRECT_CMD  = ((ddr_info.ranks_to_train << 16) | 0x000A);
@@ -577,7 +577,7 @@ static void execute_ddr_cmd(struct mod_dmc620_reg *dmc,
 
     status = dmc620_poll_dmc_status(dmc);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Execute command failed! ADDR: 0x%08x CMD: 0x%08x\n",
             addr, cmd);
     }
@@ -800,7 +800,7 @@ static int direct_ddr_cmd(struct mod_dmc620_reg *dmc)
     addr = 0;
     status = dimm_spd_t_wtr(&addr, &ddr_info);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_WTR value from SPD\n",
             status);
         return status;
@@ -831,15 +831,15 @@ static int dmc620_pre_init(void)
 {
     int status;
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Starting DDR subsystem initialization at %d MHz\n",
         ddr_info.speed);
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Identifying connected DIMM cards...\n");
     status = dimm_spd_init_check(i2c_api, &ddr_info);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error checking DIMM SPD data: %d\n", status);
         return status;
     }
@@ -864,12 +864,12 @@ static int dmc620_post_init(void)
         id = FWK_ID_ELEMENT(FWK_MODULE_IDX_N1SDP_DMC620, i);
         element_config = fwk_module_get_data(id);
 
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Verifying PHY status for DMC %d...", i);
         status = dmc620_verify_phy_status(element_config->ddr_id);
         if (status != FWK_SUCCESS)
             return status;
-        log_api->log(MOD_LOG_GROUP_INFO, "Done\n");
+        LOG(log_api, MOD_LOG_GROUP_INFO, "Done\n");
     }
 
     for (i = 0; i < count; i++) {
@@ -895,17 +895,17 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
             return status;
     }
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Initialising DMC620 at 0x%x\n", (uintptr_t)dmc);
 
     dmc620_config_interrupt(ddr_id);
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Writing functional settings\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Writing functional settings\n");
 
     value = 0;
     status = dimm_spd_address_control(&value, &ddr_info);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting address control value from SPD\n",
             status);
         return status;
@@ -916,7 +916,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_format_control(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting format control value from SPD\n",
             status);
         return status;
@@ -947,7 +947,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_memory_type(&value, &ddr_info);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting memory type value from SPD\n",
             status);
         return status;
@@ -958,7 +958,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_refi(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_REFI value from SPD\n",
             status);
         return status;
@@ -968,7 +968,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_rfc(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_RFC value from SPD\n",
             status);
         return status;
@@ -980,7 +980,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_rcd(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_RCD value from SPD\n",
             status);
         return status;
@@ -990,7 +990,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_ras(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_RAS value from SPD\n",
             status);
         return status;
@@ -1000,7 +1000,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_rp(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_RP value from SPD\n",
             status);
         return status;
@@ -1011,7 +1011,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_rrd(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_RRD value from SPD\n",
             status);
         return status;
@@ -1021,7 +1021,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     value = 0;
     status = dimm_spd_t_act_window(&value);
     if (status != FWK_SUCCESS) {
-        log_api->log(MOD_LOG_GROUP_INFO,
+        LOG(log_api, MOD_LOG_GROUP_INFO,
             "[DDR] Error code %d getting t_ACT_WINDOW value from SPD\n",
             status);
         return status;
@@ -1156,7 +1156,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
            MOD_DMC620_MEMC_CMD_CONFIG)
         continue;
 
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Sending direct DDR commands\n");
 
     status = direct_ddr_cmd(dmc);
@@ -1171,13 +1171,13 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     if (status != FWK_SUCCESS)
         return status;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] Enable DIMM refresh...");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] Enable DIMM refresh...");
     status = enable_dimm_refresh(dmc);
     if (status != FWK_SUCCESS)
         return status;
 
     /* Switch to READY */
-    log_api->log(MOD_LOG_GROUP_INFO,
+    LOG(log_api, MOD_LOG_GROUP_INFO,
         "[DDR] Setting DMC to READY mode\n");
 
     dmc->MEMC_CMD = MOD_DMC620_MEMC_CMD_GO;
@@ -1185,7 +1185,7 @@ static int dmc620_config(struct mod_dmc620_reg *dmc, fwk_id_t ddr_id)
     while ((dmc->MEMC_STATUS & MOD_DMC620_MEMC_CMD) != MOD_DMC620_MEMC_CMD_GO)
         continue;
 
-    log_api->log(MOD_LOG_GROUP_INFO, "[DDR] DMC init done.\n");
+    LOG(log_api, MOD_LOG_GROUP_INFO, "[DDR] DMC init done.\n");
 
     if (dmc_id == 1) {
         status = dmc620_post_init();

@@ -286,8 +286,7 @@ static int smt_slave_handler(struct smt_channel_ctx *channel_ctx)
 
     /* Check we have ownership of the mailbox */
     if (memory->status & MOD_SMT_MAILBOX_STATUS_FREE_MASK) {
-        smt_ctx.log_api->log(
-            MOD_LOG_GROUP_ERROR,
+        LOG(smt_ctx.log_api, MOD_LOG_GROUP_ERROR,
             "[SMT] Mailbox ownership error on channel %u\n",
             fwk_id_get_element_idx(channel_ctx->id));
 
@@ -348,7 +347,7 @@ static int smt_signal_message(fwk_id_t channel_id)
 
     if (!channel_ctx->smt_mailbox_ready) {
         /* Discard any message in the mailbox when not ready */
-        smt_ctx.log_api->log(MOD_LOG_GROUP_ERROR, "[SMT] Message not valid\n");
+        LOG(smt_ctx.log_api, MOD_LOG_GROUP_ERROR, "[SMT] Message not valid\n");
 
         return FWK_SUCCESS;
     }

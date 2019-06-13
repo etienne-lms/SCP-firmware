@@ -121,7 +121,7 @@ static int i2c_master_read(fwk_id_t device_id, uint16_t address, char *data,
     }
 
     if (timeout == 0) {
-        i2c_ctx.log_api->log(MOD_LOG_GROUP_INFO, "read: timeout expired\n");
+        LOG(i2c_ctx.log_api, MOD_LOG_GROUP_INFO, "read: timeout expired\n");
         return FWK_E_STATE;
     }
 
@@ -215,7 +215,7 @@ static int i2c_master_write(fwk_id_t device_id, uint16_t address,
     }
 
     if (timeout == 0) {
-        i2c_ctx.log_api->log(MOD_LOG_GROUP_INFO, "write: timeout expired\n");
+        LOG(i2c_ctx.log_api, MOD_LOG_GROUP_INFO, "write: timeout expired\n");
         return FWK_E_STATE;
     }
 

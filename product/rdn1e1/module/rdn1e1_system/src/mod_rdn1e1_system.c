@@ -254,7 +254,7 @@ static int rdn1e1_system_start(fwk_id_t id)
     if (status != FWK_SUCCESS)
         return status;
 
-    rdn1e1_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(rdn1e1_system_ctx.log_api, MOD_LOG_GROUP_DEBUG,
         "[RDN1E1 SYSTEM] Requesting SYSTOP initialization...\n");
 
     /*
@@ -310,7 +310,7 @@ int rdn1e1_system_process_notification(const struct fwk_event *event,
          * time only
          */
         if (params->new_state == MOD_CLOCK_STATE_RUNNING) {
-            rdn1e1_system_ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+            LOG(rdn1e1_system_ctx.log_api, MOD_LOG_GROUP_DEBUG,
                 "[RDN1E1 SYSTEM] Initializing the primary core...\n");
 
             mod_pd_restricted_api = rdn1e1_system_ctx.mod_pd_restricted_api;

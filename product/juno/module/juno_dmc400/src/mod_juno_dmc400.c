@@ -239,7 +239,7 @@ static int ddr_clk_init(fwk_id_t id)
     if (status != FWK_SUCCESS)
         return status;
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Setting clocks\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Setting clocks\n");
 
     /* Set DDR PHY PLLs after DMCCLK is stable */
     status = ctx.ddr_phy_api->configure_clk(fwk_module_id_juno_ddr_phy400);
@@ -260,7 +260,7 @@ static int ddr_dmc_init(fwk_id_t id)
     element_config = fwk_module_get_data(id);
     dmc = (struct mod_juno_dmc400_reg *)element_config->dmc;
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG,
                      "[DMC] Writing functional settings\n");
 
     /* QoS control */
@@ -344,7 +344,7 @@ static int ddr_dmc_init(fwk_id_t id)
     dmc->MODE_CONTROL = 0x00000012;
     dmc->LOW_POWER_CONTROL = 0x00000010;
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Initialize LPDDR3\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Initialize LPDDR3\n");
 
     /*  Direct commands to initialize LPDDR3 */
     ddr_chip_count = element_config->ddr_chip_count;
@@ -402,7 +402,7 @@ static int ddr_training(fwk_id_t id)
         return FWK_SUCCESS;
     }
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Configure training\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Configure training\n");
 
     /* Configure the time-out for the DDR programming */
     status = ctx.timer_api->time_to_timestamp(module_config->timer_id,
@@ -426,7 +426,7 @@ static int ddr_training(fwk_id_t id)
     dmc->T_WRLVL_EN = 0x00000028;
     dmc->T_WRLVL_WW = 0x0000001B;
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Write training\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Write training\n");
 
     /*
      * Write training
@@ -490,7 +490,7 @@ static int ddr_training(fwk_id_t id)
         }
     }
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Read training\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Read training\n");
 
     /*
      * Read Gate training
@@ -617,12 +617,12 @@ static int ddr_training(fwk_id_t id)
 
     }
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] Training completed\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] Training completed\n");
 
     return FWK_SUCCESS;
 
 timeout:
-    ctx.log_api->log(MOD_LOG_GROUP_WARNING, "[DMC] Training time-out\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_WARNING, "[DMC] Training time-out\n");
 
     return FWK_E_TIMEOUT;
 }
@@ -916,7 +916,7 @@ static int juno_dmc400_start(fwk_id_t id)
         return FWK_SUCCESS;
 
     if (SCC->GPR0 & SCC_GPR0_DDR_DISABLE) {
-        ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+        LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG,
                          "[DMC] GPR_0 disable flag set: skipping init");
 
         return FWK_SUCCESS;
@@ -933,7 +933,7 @@ static int juno_dmc400_start(fwk_id_t id)
     ctx.dmc_refclk_ratio = (DDR_FREQUENCY_MHZ * FWK_MHZ) / CLOCK_RATE_REFCLK;
     fwk_assert(ctx.dmc_refclk_ratio > 0);
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG,
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG,
                      "[DMC] Initializing DMC-400 at 0x%x\n", (uintptr_t) dmc);
 
     status = ddr_clk_init(id);
@@ -970,7 +970,7 @@ static int juno_dmc400_start(fwk_id_t id)
     dmc->INTEG_CFG = 0x00000000;
     dmc->INTEG_OUTPUTS = 0x00000000;
 
-    ctx.log_api->log(MOD_LOG_GROUP_DEBUG, "[DMC] DDR Ready\n");
+    LOG(ctx.log_api, MOD_LOG_GROUP_DEBUG, "[DMC] DDR Ready\n");
 
     /* Switch to READY */
     dmc->MEMC_CMD = DMC400_CMD_GO;
