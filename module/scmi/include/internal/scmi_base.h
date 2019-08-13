@@ -8,8 +8,8 @@
  *      SCMI base protocol definitions.
  */
 
-#ifndef SCMI_BASE_H
-#define SCMI_BASE_H
+#ifndef INTERNAL_SCMI_BASE_H
+#define INTERNAL_SCMI_BASE_H
 
 #define SCMI_PROTOCOL_ID_BASE      UINT32_C(0x10)
 #define SCMI_PROTOCOL_VERSION_BASE UINT32_C(0x10000)
@@ -87,4 +87,4 @@ struct __attribute((packed)) scmi_base_discover_agent_p2a {
 
 extern struct scp_scmi_protocol scmi_base_protocol;
 
-#endif /* SCMI_BASE_H */
+#endif /* INTERNAL_SCMI_BASE_H */
