@@ -11,6 +11,7 @@
 #ifndef FWK_INTERRUPT_H
 #define FWK_INTERRUPT_H
 
+#include <fwk_arch.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <limits.h>
@@ -55,6 +56,14 @@
  *      Please refer to the individual function documentation for more details.
  */
 #define FWK_INTERRUPT_EXCEPTION (UINT_MAX - 2)
+
+/*!
+ * \brief Initialize interrupt management in framework.
+ *
+ * \retval FWK_SUCCESS Operation succeeded.
+ * \retval FWK_E_PARAM One or more parameters were invalid.
+ */
+int fwk_interrupt_init(const struct fwk_arch_interrupt_driver *_driver);
 
 /*!
  * \brief Enable interrupts.
@@ -186,6 +195,18 @@ int fwk_interrupt_set_isr_param(unsigned int interrupt,
  * \retval FWK_E_INIT The component has not been initialized.
  */
 int fwk_interrupt_get_current(unsigned int *interrupt);
+
+/*!
+ * \brief Set the fault interrupt service routine. This is used internally by
+ *      the framework.
+ *
+ * \param isr Pointer to the fault interrupt service routine function.
+ *
+ * \retval FWK_SUCCESS Operation succeeded.
+ * \retval FWK_E_PARAM One or more parameters were invalid.
+ * \retval FWK_E_INIT The component has not been initialized.
+ */
+int fwk_interrupt_set_isr_fault(void (*isr)(void));
 
 /*!
  * @}
