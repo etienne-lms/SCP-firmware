@@ -8,9 +8,12 @@
 #ifndef FWK_HOST_H
 #define FWK_HOST_H
 
+#ifdef BUILD_OPTEE
+#include <trace.h>
+#endif
+
 #ifdef BUILD_HOST
 #include <stdio.h>
-
 /*!
  * \brief Print a message using the host's standard output.
  *
@@ -23,6 +26,8 @@
  */
 #define FWK_HOST_PRINT printf
 
+#elif defined(BUILD_OPTEE)
+#define FWK_HOST_PRINT(...)	DMSG(__VA_ARGS__)
 #else
 #define FWK_HOST_PRINT(...) \
     do { \
