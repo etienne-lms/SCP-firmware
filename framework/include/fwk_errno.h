@@ -79,6 +79,15 @@
 #define FWK_E_PANIC         -18
 
 /*!
+ * \brief Return a human readable string representation of an error number
+ *
+ * \param err Error numberevent Event to put into the queue for processing. Must not be \c NULL.
+ *
+ * \retval A valid string pointer.
+ */
+const char *fwk_err2str(unsigned int errno);
+
+/*!
  * @}
  */
 
