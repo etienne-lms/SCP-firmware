@@ -16,7 +16,7 @@ extern int host_interrupt_init(struct fwk_arch_interrupt_driver **driver);
 /*
  * Catches early failures in the initialization.
  */
-static noreturn void panic(void)
+static __noreturn void panic(void)
 {
     printf("Panic!\n");
     exit(1);

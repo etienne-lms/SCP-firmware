@@ -43,7 +43,7 @@ enum rom_event {
  * This function assumes that the RAM firmware image is located at the beginning
  * of the SCP SRAM. The reset handler will be at offset 0x4.
  */
-static noreturn void msys_jump_to_ramfw(void)
+static __noreturn void msys_jump_to_ramfw(void)
 {
     uintptr_t const *reset_base =
         (uintptr_t *)(ctx.rom_config->ramfw_base + 0x4);

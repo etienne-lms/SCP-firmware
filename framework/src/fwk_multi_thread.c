@@ -681,7 +681,7 @@ struct __fwk_multi_thread_ctx *__fwk_multi_thread_get_ctx(void)
    return &ctx;
 }
 
-noreturn void __fwk_thread_run(void)
+__noreturn void __fwk_thread_run(void)
 {
     osKernelStart();
 
