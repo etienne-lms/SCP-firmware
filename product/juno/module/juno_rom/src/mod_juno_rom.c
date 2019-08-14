@@ -170,7 +170,7 @@ static void css_clock_cluster_sel_set(volatile uint32_t *clk,
  * This function assumes that the RAM firmware image is located at the beginning
  * of the SCP SRAM. The reset handler will be at offset 0x4.
  */
-static noreturn void jump_to_ramfw(void)
+static __noreturn void jump_to_ramfw(void)
 {
     uintptr_t *reset_base = NULL;
     void (*ramfw_reset_handler)(void);

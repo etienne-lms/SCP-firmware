@@ -34,7 +34,7 @@ void software_init_hook(void)
 }
 #endif
 
-noreturn void arm_exception_reset(void)
+__noreturn void arm_exception_reset(void)
 {
     /*
      * When entering the firmware, before the framework is entered the following
@@ -50,17 +50,17 @@ noreturn void arm_exception_reset(void)
      */
 
 #ifdef __ARMCC_VERSION
-    extern noreturn void __main(void);
+    extern __noreturn void __main(void);
 
     __main();
 #else
-    extern noreturn void _start(void);
+    extern __noreturn void _start(void);
 
     _start();
 #endif
 }
 
-noreturn void arm_exception_invalid(void)
+__noreturn void arm_exception_invalid(void)
 {
     while (true)
         __WFI();

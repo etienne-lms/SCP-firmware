@@ -29,7 +29,7 @@ int __fwk_thread_init(size_t event_count);
  *
  * \return The function does not return.
  */
-noreturn void __fwk_thread_run(void);
+__noreturn void __fwk_thread_run(void);
 
 /*
  * \brief Get the event being currently processed.

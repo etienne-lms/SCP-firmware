@@ -22,7 +22,7 @@
     #include <rtx_os.h>
 #endif
 
-extern noreturn void arm_exception_invalid(void);
+extern __noreturn void arm_exception_invalid(void);
 
 struct nvic;
 

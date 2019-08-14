@@ -13,7 +13,7 @@
 #define FWK_NORETURN_H
 
 #ifdef __ARMCC_VERSION
-#   define noreturn _Noreturn
+#   define __noreturn _Noreturn
 #else
 #   include <stdnoreturn.h>
 #endif
