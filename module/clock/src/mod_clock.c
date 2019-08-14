@@ -33,7 +33,7 @@ struct clock_ctx {
     unsigned int dev_count;
 };
 
-struct clock_ctx module_ctx;
+static struct clock_ctx module_ctx;
 
 /*
  * Module API functions
@@ -198,9 +198,10 @@ static int clock_bind(fwk_id_t id, unsigned int round)
     if (round == 1)
         return FWK_SUCCESS;
 
-    if (!fwk_id_is_type(id, FWK_ID_TYPE_ELEMENT))
+    if (!fwk_id_is_type(id, FWK_ID_TYPE_ELEMENT)) {
         /* Only element binding is supported */
         return FWK_SUCCESS;
+    }
 
     ctx = module_ctx.dev_ctx_table + fwk_id_get_element_idx(id);
 
@@ -254,9 +255,10 @@ static int clock_start(fwk_id_t id)
 static int clock_process_bind_request(fwk_id_t source_id, fwk_id_t target_id,
                                       fwk_id_t api_id, const void **api)
 {
-    if (fwk_id_get_api_idx(api_id) != MOD_CLOCK_API_TYPE_HAL)
+    if (fwk_id_get_api_idx(api_id) != MOD_CLOCK_API_TYPE_HAL) {
         /* The requested API is not supported. */
         return FWK_E_ACCESS;
+    }
 
     *api = &clock_api;
     return FWK_SUCCESS;
@@ -278,10 +280,10 @@ static int clock_process_pd_pre_transition_notification(
     };
 
     pd_params = (struct mod_pd_power_state_pre_transition_notification_params *)
-        event->params;
+        (void *)event->params;
     pd_resp_params =
         (struct mod_pd_power_state_pre_transition_notification_resp_params *)
-            resp_event->params;
+        (void *)resp_event->params;
 
     assert(ctx->api->process_pending_power_transition != NULL);
     status = ctx->api->process_pending_power_transition(
@@ -302,7 +304,7 @@ static int clock_process_pd_pre_transition_notification(
 
     ctx->transition_pending_response_status = FWK_SUCCESS;
     out_params =
-        (struct clock_notification_params *)outbound_event.params;
+        (struct clock_notification_params *)(void *)outbound_event.params;
 
     /*
      * For now it is sufficient to assume that a PD ON state implies that
@@ -343,8 +345,8 @@ static int clock_process_pd_transition_notification(
     };
 
     pd_params =
-        (struct mod_pd_power_state_transition_notification_params *)event
-            ->params;
+        (struct mod_pd_power_state_transition_notification_params *)
+	(void *)event->params;
 
     assert(ctx->api->process_power_transition != NULL);
     status = ctx->api->process_power_transition(
@@ -354,7 +356,8 @@ static int clock_process_pd_transition_notification(
         return status;
 
     /* Notify subscribers of the clock state change */
-    out_params = (struct clock_notification_params *)outbound_event.params;
+    out_params = (struct clock_notification_params *)
+	(void *)outbound_event.params;
     if (pd_params->state == MOD_PD_STATE_ON)
         out_params->new_state = MOD_CLOCK_STATE_RUNNING;
     else
@@ -392,7 +395,8 @@ static int clock_process_notification_response(
     }
 
     resp_params =
-        (struct clock_state_change_pending_resp_params *)event->params;
+        (struct clock_state_change_pending_resp_params *)
+	(void *)event->params;
 
     /*
      * Change the status used in the response to the power domain notification
@@ -410,8 +414,8 @@ static int clock_process_notification_response(
          * notification can be sent.
          */
         pd_resp_params =
-            (struct mod_pd_power_state_pre_transition_notification_resp_params
-                 *)pd_response_event.params;
+            (struct mod_pd_power_state_pre_transition_notification_resp_params *)
+	    (void *)pd_response_event.params;
         pd_resp_params->status = ctx->transition_pending_response_status;
         fwk_thread_put_event(&pd_response_event);
     }
