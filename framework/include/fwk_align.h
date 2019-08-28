@@ -22,4 +22,13 @@
 #   include <stdalign.h>
 #endif
 
+#ifdef BUILD_OPTEE
+/* Hack to add missing max_align_t */
+#include <stddef.h>
+#include <stdint.h>
+#ifndef _GCC_MAX_ALIGN_T
+typedef uintmax_t max_align_t;
+#endif
+#endif /*BUILD_OPTEE*/
+
 #endif /* FWK_ALIGN_H */
