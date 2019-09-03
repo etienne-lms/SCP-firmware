@@ -200,9 +200,10 @@ static int clock_bind(fwk_id_t id, unsigned int round)
     if (round == 1)
         return FWK_SUCCESS;
 
-    if (!fwk_id_is_type(id, FWK_ID_TYPE_ELEMENT))
+    if (!fwk_id_is_type(id, FWK_ID_TYPE_ELEMENT)) {
         /* Only element binding is supported */
         return FWK_SUCCESS;
+    }
 
     ctx = module_ctx.dev_ctx_table + fwk_id_get_element_idx(id);
 
