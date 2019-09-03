@@ -34,7 +34,8 @@ BS_FIRMWARE_MODULES-vexpress := \
     scmi_clock clock dummy_clock
 
 BS_FIRMWARE_MODULES-stm32mp1 := \
-    scmi_clock clock stm32_clock
+    scmi_clock clock stm32_clock \
+    scmi_reset reset stm32_reset
 
 BS_FIRMWARE_MODULES := \
     $(BS_FIRMWARE_MODULES_GENERIC) \
