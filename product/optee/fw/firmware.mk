@@ -14,8 +14,6 @@ BS_FIRMWARE_HAS_NOTIFICATION := no
 
 OPTEE_PLATFORM := vexpress
 
-DEFINES += CFG_WITH_SCMI
-
 BS_FIRMWARE_MODULE_HEADERS_ONLY := \
     stubs \
     power_domain

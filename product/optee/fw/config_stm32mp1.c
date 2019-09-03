@@ -11,7 +11,6 @@
  */
 
 #include <assert.h>
-#include <dt-bindings/clock/stm32mp1-clks.h>
 #include <fwk_element.h>
 #include <fwk_id.h>
 #include <fwk_module.h>
@@ -74,12 +73,12 @@
  * Clocks from stm32 platform are identified with a platform interger ID value.
  * Config provides a default state and the single supported rate.
  */
-#define STM32_CLOCK(_idx, _id)	[(_idx)] = {	\
-                    .clock_id = (_id),		\
+#define STM32_CLOCK(_idx, _id)		[(_idx)] = {			\
+                    .clock_id = (_id),					\
 		}
 
 /* Module clock gets stm32_clock (FWK_MODULE_IDX_STM32_CLOCK) elements */
-#define CLOCK(_idx, _id)  [(_idx)] = { \
+#define CLOCK(_idx, _id)		[(_idx)] = {			\
 		.driver_id = FWK_ID_ELEMENT_INIT(FWK_MODULE_IDX_STM32_CLOCK, \
 						 (_idx) /* same index */), \
 		.api_id = FWK_ID_API_INIT(FWK_MODULE_IDX_STM32_CLOCK,	\
@@ -88,9 +87,9 @@
 
 /*
  * SCMI clock binds to clock module (FWK_MODULE_IDX_CLOCK).
- * Common permissions for exposed clocks.
+ * Common permissions for exposed clocks. All have same permissions.
  */
-#define SCMI_CLOCK(_idx, _id)		[(_idx)] =  { \
+#define SCMI_CLOCK(_idx, _id)		[(_idx)] =  {			\
 		.element_id = FWK_ID_ELEMENT_INIT(FWK_MODULE_IDX_CLOCK,	\
 						  (_idx) /* same index */), \
 		.permissions = MOD_SCMI_CLOCK_PERM_ATTRIBUTES |		\
@@ -146,12 +145,13 @@ static const struct fwk_element *clock_config_desc_table(fwk_id_t module_id)
 	return clock_elt;
 }
 
-/* Exported in libscmi */
 const struct fwk_module_config config_clock = {
 	.get_element_table = clock_config_desc_table,
 };
 
-/* Elements for stm32_clock module: define elements from data table */
+/*
+ * Elements for stm32_clock module: define elements from data table
+ */
 #undef CLOCK_CELL
 #define CLOCK_CELL(a, b, c)	STM32_CLOCK(a, b)
 static const struct mod_stm32_clock_dev_config stm32_clock_cfg[] = {
@@ -170,12 +170,13 @@ static const struct fwk_element *stm32_clock_desc_table(fwk_id_t module_id)
 	return stm32_clock_elt;
 }
 
-/* Exported in libscmi */
 const struct fwk_module_config config_stm32_clock = {
 	.get_element_table =(void *)stm32_clock_desc_table,
 };
 
-/* Elements for SCMI clock module: define scmi_agent OSPM (TODO: get a name) */
+/*
+ * Elements for SCMI Clock module: define scmi_agent OSPM
+ */
 #undef CLOCK_CELL
 #define CLOCK_CELL(a, b, c)	SCMI_CLOCK(a, b)
 static const struct mod_scmi_clock_device scmi_clock_cfg[] = {
@@ -189,54 +190,21 @@ static const struct fwk_element scmi_clock_elt[] = {
 	{ } /* Terminal tag */
 };
 
-static const struct mod_scmi_clock_agent agent_table[SCMI_AGENT_ID_COUNT] = {
+static const struct mod_scmi_clock_agent clock_agents[SCMI_AGENT_ID_COUNT] = {
     [SCMI_AGENT_ID_OSPM] = {
         .device_table = scmi_clock_cfg,
         .device_count = FWK_ARRAY_SIZE(scmi_clock_cfg),
     },
 };
 
-static const struct mod_scmi_clock_config scmi_agent = {
+static const struct mod_scmi_clock_config scmi_clock_agents = {
         .max_pending_transactions = 0,
-        .agent_table = agent_table,
-        .agent_count = FWK_ARRAY_SIZE(agent_table),
+        .agent_table = clock_agents,
+        .agent_count = FWK_ARRAY_SIZE(clock_agents),
 };
 
 /* Exported in libscmi */
 const struct fwk_module_config config_scmi_clock = {
 	/* Register module elements straight from data table */
-	.data = (void *)&scmi_agent,
+	.data = (void *)&scmi_clock_agents,
 };
-
-// Register 2 dummy power-domains
-
-// Register 2 dummy reset
-
-#if 0 // Dynamic alloc: build table dynamically and free them when not needed
-
-/*
- * Simulate a platform that internally handles clocks with an identifer,
- * not an index in a clock table.
- */
-static TEE_Result vexpress_dummy_scmi(void)
-{
-#ifdef CFG_SCMI_CLOCK
-	if (libscmi_register_clocks(dummy_clocks, ARRAY_SIZE(dummy_clocks)))
-		panic();
-#endif
-#ifdef CFG_SCMI_POWER_DOMAIN
-	if (libscmi_register_power_domains(dummy_pd, ARRAY_SIZE(dummy_pd)))
-		panic();
-#endif
-#ifdef CFG_SCMI_RESET
-	if (libscmi_register_resets(dummy_reset, ARRAY_SIZE(dummy_reset)))
-		panic();
-#endif
-}
-static int clock_config_post_init(fwk_id_t module_id)
-{
-	// test freeing allocated tables.
-	// module scmi_clock references the permissions per clock information
-}
-
-#endif

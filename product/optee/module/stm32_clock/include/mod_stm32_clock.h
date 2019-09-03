@@ -8,9 +8,10 @@
 #ifndef MOD_STM32_CLOCK_H
 #define MOD_STM32_CLOCK_H
 
-#include <stdint.h>
+#include <dt-bindings/clock/stm32mp1-clks.h>
 #include <fwk_element.h>
 #include <fwk_macros.h>
+#include <stdint.h>
 
 #define CLOCK_DEV_IDX_HSE	CK_SCMI_HSE
 #define CLOCK_DEV_IDX_HSI	CK_SCMI_HSI
