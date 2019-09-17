@@ -28,6 +28,11 @@ void fwk_unreachable(void)
 {
     #ifdef BUILD_MODE_DEBUG
         fwk_trap();
+    #elif defined(BUILD_OPTEE)
+	// FIXME: this hack prevents from build warning below:
+	// warning: sh_link not set for section `.ARM.exidx.text.unlikely.fwk_unreachable
+	    while (1)
+		    ;
     #else
         /*
          * Let the optimizer know that anything after this point is unreachable.
