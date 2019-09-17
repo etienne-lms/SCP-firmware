@@ -17,6 +17,11 @@
 #include <fwk_mm.h>
 #include <mod_log.h>
 
+#ifdef BUILD_OPTEE
+#include <console.h>
+#include <trace.h>
+#endif
+
 static const struct mod_log_config *log_config;
 static struct mod_log_driver_api *log_driver;
 
@@ -25,6 +30,28 @@ static struct mod_log_driver_api *log_driver;
                          MOD_LOG_GROUP_INFO | \
                          MOD_LOG_GROUP_WARNING)
 
+#ifdef BUILD_OPTEE
+static int do_print(enum mod_log_group group, const char *fmt, va_list args)
+{
+	int level = TRACE_DEBUG;
+
+	switch (group) {
+	case MOD_LOG_GROUP_ERROR:
+		level = TRACE_ERROR;
+		break;
+	case MOD_LOG_GROUP_INFO:
+	case MOD_LOG_GROUP_WARNING:
+		level = TRACE_INFO;
+		break;
+	case MOD_LOG_GROUP_DEBUG:
+	default:
+		break;
+	}
+
+	trace_vprintf("[scmi-server]", 0, level, true, fmt, args);
+	return 0;
+}
+#else
 static int do_putchar(char c)
 {
     int status;
@@ -101,7 +128,8 @@ static int print_string(const char *str)
     return FWK_SUCCESS;
 }
 
-static int do_print(const char *fmt, va_list *args)
+static int do_print(enum mod_log_group group __unused,
+                    const char *fmt, va_list args)
 {
     int status;
     int bit64;
@@ -124,7 +152,7 @@ next_symbol:
                 if (bit64)
                     return FWK_E_DATA;
 
-                num = va_arg(*args, int32_t);
+                num = va_arg(args, int32_t);
 
                 status = print_int32(num, fill);
                 if (status != FWK_SUCCESS)
@@ -132,22 +160,22 @@ next_symbol:
                 break;
 
             case 's':
-                status = print_string(va_arg(*args, const char *));
+                status = print_string(va_arg(args, const char *));
                 if (status != FWK_SUCCESS)
                     return status;
                 break;
 
             case 'c':
-                status = do_putchar(va_arg(*args, int));
+                status = do_putchar(va_arg(args, int));
                 if (status != FWK_SUCCESS)
                     return status;
                 break;
 
             case 'x':
                 if (bit64)
-                    unum = va_arg(*args, uint64_t);
+                    unum = va_arg(args, uint64_t);
                 else
-                    unum = va_arg(*args, uint32_t);
+                    unum = va_arg(args, uint32_t);
                 status = print_uint64(unum, 16, fill);
                 if (status != FWK_SUCCESS)
                     return status;
@@ -162,7 +190,7 @@ next_symbol:
                 if (bit64)
                     return FWK_E_DATA;
 
-                unum = va_arg(*args, uint32_t);
+                unum = va_arg(args, uint32_t);
 
                 status = print_uint64(unum, 10, fill);
                 if (status != FWK_SUCCESS)
@@ -190,6 +218,7 @@ next_symbol:
 
     return FWK_SUCCESS;
 }
+#endif /* BUILD_OPTEE */
 
 static bool is_valid_group(unsigned int group)
 {
@@ -230,7 +259,7 @@ static int do_log(enum mod_log_group group, const char *fmt, ...)
 
     if (group & log_config->log_groups) {
         va_start(args, fmt);
-        status = do_print(fmt, &args);
+        status = do_print(group, fmt, args);
         va_end(args);
 
         if (status != FWK_SUCCESS)
@@ -242,6 +271,9 @@ static int do_log(enum mod_log_group group, const char *fmt, ...)
 
 static int do_flush(void)
 {
+#ifdef BUILD_OPTEE
+	console_flush();
+#else
     int status;
 
     /* API called too early */
@@ -255,6 +287,7 @@ static int do_flush(void)
     status = log_driver->flush(log_config->device_id);
     if (status != FWK_SUCCESS)
         return FWK_E_DEVICE;
+#endif
 
     return FWK_SUCCESS;
 }
@@ -277,7 +310,7 @@ static int log_init(fwk_id_t module_id, unsigned int element_count,
         return FWK_E_DATA;
 
     /* Check for invalid groups in the 'log_groups' mask */
-    if (config->log_groups & ~ALL_GROUPS_MASK)
+    if (config && (config->log_groups & ~ALL_GROUPS_MASK))
         return FWK_E_PARAM;
 
     log_config = config;
@@ -292,6 +325,10 @@ static int log_bind(fwk_id_t id, unsigned int round)
 
     /* Skip second round */
     if (round == 1)
+        return FWK_SUCCESS;
+
+    /* No expected driver => we're done */
+    if (log_config == NULL)
         return FWK_SUCCESS;
 
     /* Get the device driver's API */
