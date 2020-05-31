@@ -1,20 +1,18 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
 /*
- * Arm SCP/MCP Software
- * Copyright (c) 2015-2020, Arm Limited and Contributors. All rights reserved.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- *
- * Description:
- *      SCMI base protocol definitions.
+ * Copyright (c) 2015-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2019, Linaro Limited
  */
 
-#ifndef INTERNAL_SCMI_BASE_H
-#define INTERNAL_SCMI_BASE_H
+#ifndef SCMI_MSG_BASE_H
+#define SCMI_MSG_BASE_H
 
-#define SCMI_PROTOCOL_ID_BASE      UINT32_C(0x10)
-#define SCMI_PROTOCOL_VERSION_BASE UINT32_C(0x10000)
+#include <stdint.h>
 
-enum scmi_base_command_id {
+#define SCMI_PROTOCOL_VERSION_BASE	0x20000U
+#define SCMI_DEFAULT_STRING_LENGTH	16U
+
+enum scmi_base_message_id {
     SCMI_BASE_DISCOVER_VENDOR                 = 0x003,
     SCMI_BASE_DISCOVER_SUB_VENDOR             = 0x004,
     SCMI_BASE_DISCOVER_IMPLEMENTATION_VERSION = 0x005,
@@ -27,32 +25,32 @@ enum scmi_base_command_id {
  * PROTOCOL_ATTRIBUTES
  */
 
-#define SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_PROTOCOLS_POS  0
-#define SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_AGENTS_POS     8
+#define SCMI_BASE_PROTOCOL_ATTRS_NUM_PROTOCOLS_POS  0
+#define SCMI_BASE_PROTOCOL_ATTRS_NUM_AGENTS_POS     8
 
-#define SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_PROTOCOLS_MASK 0xFF
-#define SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_AGENTS_MASK    0xFF00
+#define SCMI_BASE_PROTOCOL_ATTRS_NUM_PROTOCOLS_MASK 0xFF
+#define SCMI_BASE_PROTOCOL_ATTRS_NUM_AGENTS_MASK    0xFF00
 
 #define SCMI_BASE_PROTOCOL_ATTRIBUTES(NUM_PROTOCOLS, NUM_AGENTS) \
-    ((((NUM_PROTOCOLS) << SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_PROTOCOLS_POS) \
-      & SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_PROTOCOLS_MASK) | \
-     (((NUM_AGENTS) << SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_AGENTS_POS) \
-       & SCMI_BASE_PROTOCOL_ATTRIBUTES_NUM_AGENTS_MASK))
+    ((((NUM_PROTOCOLS) << SCMI_BASE_PROTOCOL_ATTRS_NUM_PROTOCOLS_POS) & \
+      SCMI_BASE_PROTOCOL_ATTRS_NUM_PROTOCOLS_MASK) | \
+     (((NUM_AGENTS) << SCMI_BASE_PROTOCOL_ATTRS_NUM_AGENTS_POS) & \
+       SCMI_BASE_PROTOCOL_ATTRS_NUM_AGENTS_MASK))
 
 /*
  * BASE_DISCOVER_VENDOR
  */
-struct __attribute((packed)) scmi_base_discover_vendor_p2a {
+struct scmi_base_discover_vendor_p2a {
     int32_t status;
-    char vendor_identifier[16];
+    char vendor_identifier[SCMI_DEFAULT_STRING_LENGTH];
 };
 
 /*
  * BASE_DISCOVER_SUB_VENDOR
  */
-struct __attribute((packed)) scmi_base_discover_sub_vendor_p2a {
+struct scmi_base_discover_sub_vendor_p2a {
     int32_t status;
-    char sub_vendor_identifier[16];
+    char sub_vendor_identifier[SCMI_DEFAULT_STRING_LENGTH];
 };
 
 /*
@@ -63,26 +61,14 @@ struct __attribute((packed)) scmi_base_discover_sub_vendor_p2a {
 /*
  * BASE_DISCOVER_LIST_PROTOCOLS
  */
-struct __attribute((packed)) scmi_base_discover_list_protocols_a2p {
+struct scmi_base_discover_list_protocols_a2p {
     uint32_t skip;
 };
 
-struct __attribute((packed)) scmi_base_discover_list_protocols_p2a {
+struct scmi_base_discover_list_protocols_p2a {
     int32_t status;
     uint32_t num_protocols;
     uint32_t protocols[];
 };
 
-/*
- * BASE_DISCOVER_AGENT
- */
-struct __attribute((packed)) scmi_base_discover_agent_a2p {
-    uint32_t agent_id;
-};
-
-struct __attribute((packed)) scmi_base_discover_agent_p2a {
-    int32_t status;
-    char name[16];
-};
-
-#endif /* INTERNAL_SCMI_BASE_H */
+#endif /* SCMI_MSG_BASE_H */
