@@ -578,7 +578,7 @@ static int scmi_pd_power_state_set_handler(fwk_id_t service_id,
         };
 
         struct event_request_params *event_params =
-            (struct event_request_params *)event.params;
+            (struct event_request_params *)(void *)event.params;
         event_params->pd_power_state = pd_power_state;
         event_params->pd_id = pd_id;
 
@@ -721,7 +721,7 @@ static int scmi_pd_power_state_get_handler(fwk_id_t service_id,
             .id = mod_scmi_pd_event_id_dbg_enable_get,
         };
 
-        event_params = (struct event_request_params *)event.params;
+        event_params = (struct event_request_params *)(void *)event.params;
 
         event_params->pd_id = pd_id;
 
@@ -1165,7 +1165,7 @@ static int process_request_event(const struct fwk_event *event)
         .status = SCMI_GENERIC_ERROR
     };
 
-    params = (struct event_request_params *)event->params;
+    params = (struct event_request_params *)(void *)event->params;
 
     /*
      * Internal events:
@@ -1232,7 +1232,7 @@ static int process_response_event(const struct fwk_event *event, bool get)
     };
 
     struct mod_debug_response_params *params =
-        (struct mod_debug_response_params *)event->params;
+        (struct mod_debug_response_params *)(void *)event->params;
 
     /*
      * We know this event comes from the DEBUG HAL for now so we use the
@@ -1300,7 +1300,7 @@ static int scmi_pd_process_notification(
     unsigned int agent_id;
     uint32_t state;
     struct mod_pd_power_state_transition_notification_params *event_params =
-        ((struct mod_pd_power_state_transition_notification_params *)
+        ((struct mod_pd_power_state_transition_notification_params *)(void *)
             event->params);
 
     if (fwk_id_is_equal(
