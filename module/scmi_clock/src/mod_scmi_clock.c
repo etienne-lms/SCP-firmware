@@ -578,6 +578,7 @@ static int create_event_request(fwk_id_t clock_id,
         return FWK_E_BUSY;
 
     struct fwk_event event = {
+        .source_id = service_id,
         .target_id = fwk_module_id_scmi_clock,
     };
 
